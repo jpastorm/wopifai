@@ -57,6 +57,28 @@ class LibraryController
 		}
 		
 	}
+
+	public function GetContentLibrary($request,$response,$args)
+	{	
+		$Library = new LibraryModel();		
+		if (is_null($args['id'])) {
+			$res = $Library->listContent();
+		}else{
+			$Library->idLibreria = $args['id'];
+			$res = $Library->listContentId();	
+		}
+		if ($res == false) {
+			$response->getBody()->write(json_encode(array("Message" => "No se encontraron resultados")));
+			return $response
+			->withHeader('Content-Type', 'application/json')
+			->withStatus(404);
+		}
+		$response->getBody()->write(json_encode($res));
+		return $response
+		->withHeader('Content-Type', 'application/json')
+		->withStatus(200);
+
+	}
 }
 
 ?>

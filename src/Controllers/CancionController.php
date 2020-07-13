@@ -80,6 +80,23 @@ class CancionController
 		return $response->withHeader('Content-Type', 'application/force-download');
 		
 	}
+	public function getSong($request,$response,$args)
+	{	
+		$Cancion = new CancionModel();
+		$result = $Cancion->buscador($args["nombre"]);
+		if ($result == false) {
+
+			$response->getBody()->write(json_encode(array("Message" => "No content" )));
+			return $response
+			->withHeader('content-type', 'application/json')
+			->withStatus(404);
+		}
+
+		$response->getBody()->write(json_encode($result));
+		return $response
+		->withHeader('content-type', 'application/json')
+		->withStatus(200);
+	}
 }
 
 ?>

@@ -31,8 +31,8 @@ class CancionModel
       	return false;
       }
       
-      $resultado=null;
-      $db=null;
+      $resultado = null;
+      $db = null;
     }catch(PDOException $e){
       return '{"error":{"text":'.$e->getMessage().'}}';
     }
@@ -57,8 +57,8 @@ class CancionModel
       }else{
         return false;
       }
-      $result=null;
-      $db=null;
+      $result = null;
+      $db = null;
     }catch(PDOException $e){
       return '{"error":{"text":'.$e->getMessage().'}}';
     }
@@ -77,13 +77,37 @@ class CancionModel
       $result->bindParam(':idCancion',$idCancion);
       $result->execute();
       if ($result->rowCount() > 0) {
-        $cancion=$result->fetchAll(PDO::FETCH_OBJ);
+        $cancion = $result->fetchAll(PDO::FETCH_OBJ);
         return $cancion;        
       }else{
         return false;
       }
-      $result=null;
-      $db=null;
+      $result = null;
+      $db = null;
+    }catch(PDOException $e){
+      return '{"error":{"text":'.$e->getMessage().'}}';
+    }
+  }
+  public function buscador($nombre){
+    $nombre="'".$nombre." *'";
+    $db = new \App\Config\Database;
+
+    $sql="select Cancion.nombreArchivo,MetaDato.Artista,MetaDato.Titulo FROM MetaDato inner join Cancion 
+on MetaDato.idCancion = Cancion.idCancion WHERE MATCH(Artista,Titulo)AGAINST (:nombre  IN BOOLEAN MODE)";
+    try{
+      $db = $db->connectDB();
+
+      $result = $db->prepare($sql);
+      $result->bindParam(':nombre',$nombre);
+      $result->execute();
+      if ($result->rowCount() > 0) {
+        $cancion = $result->fetchAll(PDO::FETCH_OBJ);
+        return $cancion;        
+      }else{
+        return false;
+      }
+      $result = null;
+      $db = null;
     }catch(PDOException $e){
       return '{"error":{"text":'.$e->getMessage().'}}';
     }
