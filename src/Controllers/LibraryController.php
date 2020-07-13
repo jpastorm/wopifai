@@ -43,13 +43,13 @@ class LibraryController
 		$res = $Library->createLibrary();
 
 		if ($res) {
-			$payload = json_encode(array("Message" => "Se creo exitosamente el usuario ".$data['Nombre']));		
+			$payload = json_encode(array("Message" => "Se creo exitosamente la libreria ".$data['Nombre']));		
 			$response->getBody()->write($payload);
 			return $response
 			->withHeader('Content-Type', 'application/json')
 			->withStatus(201);
 		}else{
-			$payload = json_encode(array("Error" => "No se pudo crear el usuario"));			
+			$payload = json_encode(array("Error" => "No se pudo crear la libreria"));			
 			$response->getBody()->write($payload);
 			return $response
 			->withHeader('Content-Type', 'application/json')

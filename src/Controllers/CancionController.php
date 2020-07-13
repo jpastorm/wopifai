@@ -1,0 +1,85 @@
+<?php
+namespace App\Controllers;
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+use App\Models\CancionModel;
+use App\Libraries\Explorador;
+/**
+ * 
+ */
+class CancionController
+{
+	
+	public function Gethash($idCancion) 
+	{	
+		$Cancion = new CancionModel();	
+		$Cancion->idCancion = $idCancion;
+		$check = $Cancion->checkHash();
+		return $check;
+	}
+	public function AddCancion($idLibreria,$idCancion,$NombreArchivo) 
+	{   	
+		$check = self::Gethash($idCancion);
+
+		if ($check == false) {
+			$Cancion = new CancionModel();
+			$Cancion->idLibreria = $idLibreria;
+			$Cancion->idCancion = $idCancion;
+			$Cancion->NombreArchivo = $NombreArchivo;
+
+			$res=$Cancion->createCancion();
+			if ($res) {
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+	}
+	public function getAlbumCover($request, $response, $args)
+	{
+		$Cancion = new CancionModel();
+		$Cancion->idCancion = $args['hash'];
+		$path = $Cancion->getPath();		
+
+		$coverData = Explorador::GetAlbumCover($path[0]->Ruta);
+		if(is_null($coverData['cover'])) {
+			$response->getBody()->write(json_encode(array("error" => "NULO PE :V" )));
+			return $response
+			->withHeader('content-type', 'application/json')
+			->withStatus(404);
+		}else{
+
+			$response->getBody()->write($coverData['cover']);
+			return $response
+			->withHeader('content-type', $coverData['mimetype'])
+			->withStatus(200);	
+		}
+
+	}
+	public function getMeta($request,$response,$args){
+		$Cancion = new CancionModel();
+		$Cancion->idCancion = $args['hash'];
+		$path = $Cancion->getPath();		
+		$tag = Explorador::GetTags($path[0]->Ruta);
+		$response->getBody()->write(json_encode($tag));
+		return $response
+		->withHeader('content-type', 'application/json')
+		->withStatus(200);
+
+	}
+	public function getStreamTrack($request,$response,$args)
+	{	
+		$Cancion = new CancionModel();
+		$Cancion->idCancion = $args['hash'];
+		$path = $Cancion->getPath();
+
+		$file = $path[0]->Ruta;
+		$contenido = file_get_contents($file);
+		$response->getBody()->write($contenido);
+		return $response->withHeader('Content-Type', 'application/force-download');
+		
+	}
+}
+
+?>

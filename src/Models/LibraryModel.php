@@ -32,7 +32,27 @@ class LibraryModel
       return '{"error":{"text":'.$e->getMessage().'}}';
     }   
   }
-  
+
+   public function listPathLibrary() {
+    //$db = new Database();
+    $db = new \App\Config\Database;
+    $sql ="SELECT idLibreria,Ruta FROM Libreria";
+    try{
+      $db = $db->connectDB();
+      $result = $db->query($sql);
+      if ($result->rowCount() > 0) {
+        $library = $result->fetchAll(PDO::FETCH_OBJ);
+        return $library;
+      }else{
+        return false;
+      }
+      $resultado = null;
+      $db = null;
+    }catch(PDOException $e){
+      return '{"error":{"text":'.$e->getMessage().'}}';
+    }   
+  }
+
   public function createLibrary() {
 
     $Nombre = $this->Nombre;
