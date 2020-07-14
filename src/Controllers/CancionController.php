@@ -41,10 +41,15 @@ class CancionController
 		$Cancion = new CancionModel();
 		$Cancion->idCancion = $args['hash'];
 		$path = $Cancion->getPath();		
-
-		$coverData = Explorador::GetAlbumCover($path[0]->Ruta);
+		if ($path == false) {
+			$response->getBody()->write(json_encode(array("error" => "No se encontro la ruta especificada" )));
+			return $response
+			->withHeader('content-type', 'application/json')
+			->withStatus(404);
+		}
+		$coverData = Explorador::GetAlbumCover($path[0]->Ruta."/".$path[0]->NombreArchivo);
 		if(is_null($coverData['cover'])) {
-			$response->getBody()->write(json_encode(array("error" => "NULO PE :V" )));
+			$response->getBody()->write(json_encode(array("error" => "No se encontro el cover de la cancion" )));
 			return $response
 			->withHeader('content-type', 'application/json')
 			->withStatus(404);

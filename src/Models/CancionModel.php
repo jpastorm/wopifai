@@ -69,7 +69,7 @@ class CancionModel
 
     $db = new \App\Config\Database;
 
-    $sql="select Libreria.Ruta from Libreria inner join Cancion on Libreria.idLibreria=Cancion.idLibreria where Cancion.idCancion=:idCancion";
+    $sql="select Libreria.Ruta,Cancion.NombreArchivo from Libreria inner join Cancion on Libreria.idLibreria=Cancion.idLibreria where Cancion.idCancion=:idCancion";
     try{
       $db = $db->connectDB();
 

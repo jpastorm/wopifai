@@ -4,7 +4,7 @@ use PDO;
 class Database{
     private $dbHost='localhost';
     private $dbUser='admin';
-    private $dbPass='password';
+    private $dbPass='Sistemas.2020';
     private $dbName='musica';
 
     //connection

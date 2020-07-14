@@ -5,7 +5,7 @@ CREATE TABLE Libreria (
 	Nombre varchar(255) NOT NULL,
 	Ruta TEXT NOT NULL,
 	fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	fechaUltimoEscaneo TIMESTAMP
+	fechaUltimoEscaneo TIMESTAMP null
 );
 
 CREATE TABLE Cancion (
