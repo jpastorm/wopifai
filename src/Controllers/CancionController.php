@@ -40,7 +40,7 @@ class CancionController
 	{
 		$Cancion = new CancionModel();
 		$Cancion->idCancion = $args['hash'];
-		$path = $Cancion->getPath();		
+		$path = $Cancion->getPath();	
 		if ($path == false) {
 			$response->getBody()->write(json_encode(array("error" => "No se encontro la ruta especificada" )));
 			return $response
@@ -58,7 +58,9 @@ class CancionController
 			$response->getBody()->write($coverData['cover']);
 			return $response
 			->withHeader('content-type', $coverData['mimetype'])
-			->withStatus(200);	
+			->withStatus(200);
+			//return $response->withHeader('Content-Type', 'application/force-download');
+	
 		}
 
 	}
@@ -66,7 +68,7 @@ class CancionController
 		$Cancion = new CancionModel();
 		$Cancion->idCancion = $args['hash'];
 		$path = $Cancion->getPath();		
-		$tag = Explorador::GetTags($path[0]->Ruta);
+		$tag = Explorador::GetTags($path[0]->Ruta."/".$path[0]->NombreArchivo);
 		$response->getBody()->write(json_encode($tag));
 		return $response
 		->withHeader('content-type', 'application/json')
@@ -79,7 +81,7 @@ class CancionController
 		$Cancion->idCancion = $args['hash'];
 		$path = $Cancion->getPath();
 
-		$file = $path[0]->Ruta;
+		$file = $path[0]->Ruta."/".$path[0]->NombreArchivo;
 		$contenido = file_get_contents($file);
 		$response->getBody()->write($contenido);
 		return $response->withHeader('Content-Type', 'application/force-download');

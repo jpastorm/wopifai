@@ -61,7 +61,7 @@ class LibraryController
 	public function GetContentLibrary($request,$response,$args)
 	{	
 		$Library = new LibraryModel();		
-		if (is_null($args['id'])) {
+		if (@is_null($args['id'])) {
 			$res = $Library->listContent();
 		}else{
 			$Library->idLibreria = $args['id'];
