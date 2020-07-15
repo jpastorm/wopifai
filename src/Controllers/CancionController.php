@@ -3,6 +3,7 @@ namespace App\Controllers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\Models\CancionModel;
+use App\Models\MetaDatoModel;
 use App\Libraries\Explorador;
 /**
  * 
@@ -65,14 +66,13 @@ class CancionController
 
 	}
 	public function getMeta($request,$response,$args){
-		$Cancion = new CancionModel();
-		$Cancion->idCancion = $args['hash'];
-		$path = $Cancion->getPath();		
-		$tag = Explorador::GetTags($path[0]->Ruta."/".$path[0]->NombreArchivo);
-		$response->getBody()->write(json_encode($tag));
+		$MetaDato = new MetaDatoModel();
+		$MetaDato->idCancion = $args['hash'];
+		$res = $MetaDato->getMeta();				
+		$response->getBody()->write(json_encode($res));
 		return $response
 		->withHeader('content-type', 'application/json')
-		->withStatus(200);
+		->withStatus(200);		
 
 	}
 	public function getStreamTrack($request,$response,$args)
@@ -91,6 +91,23 @@ class CancionController
 	{	
 		$Cancion = new CancionModel();
 		$result = $Cancion->buscador($args["nombre"]);
+		if ($result == false) {
+
+			$response->getBody()->write(json_encode(array("Message" => "No content" )));
+			return $response
+			->withHeader('content-type', 'application/json')
+			->withStatus(404);
+		}
+
+		$response->getBody()->write(json_encode($result));
+		return $response
+		->withHeader('content-type', 'application/json')
+		->withStatus(200);
+	}
+	public function getCancion($request,$response,$args)
+	{
+		$Cancion = new CancionModel();
+		$result = $Cancion->getInformation($args["hash"]);
 		if ($result == false) {
 
 			$response->getBody()->write(json_encode(array("Message" => "No content" )));

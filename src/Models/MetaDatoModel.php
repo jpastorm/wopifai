@@ -53,6 +53,32 @@ class MetaDatoModel
     }
   }
 
+    public function getMeta(){
+      
+    $idCancion = $this->idCancion;
+    $db = new \App\Config\Database;
+
+    $sql="select * from MetaDato where idCancion = :idCancion";
+
+    try{
+      $db = $db->connectDB();
+
+      $result = $db->prepare($sql);
+      $result->bindParam(':idCancion',$idCancion);
+      $result->execute();
+      if ($result->rowCount() > 0) {
+        $cancion = $result->fetchAll(PDO::FETCH_OBJ);
+        return $cancion;        
+      }else{
+        return false;
+      }
+      $result = null;
+      $db = null;
+    }catch(PDOException $e){
+      return '{"error":{"text":'.$e->getMessage().'}}';
+    }
+  }
+
 }
 
 

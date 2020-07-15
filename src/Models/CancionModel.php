@@ -113,7 +113,31 @@ on MetaDato.idCancion = Cancion.idCancion WHERE MATCH(Artista,Titulo)AGAINST (:n
     }
   }
   
+    public function getInformation($idCancion){
 
+    $db = new \App\Config\Database;
+
+    $sql="select Cancion.idCancion,Cancion.idLibreria,Libreria.Nombre,MetaDato.Artista,MetaDato.Titulo,MetaDato.Album,MetaDato.Track,MetaDato.Genero,MetaDato.Anio from Cancion 
+inner join Libreria on Cancion.idLibreria = Libreria.idLibreria
+inner join MetaDato on MetaDato.idCancion = Cancion.idCancion where Cancion.idCancion = :idCancion";
+    try{
+      $db = $db->connectDB();
+
+      $result = $db->prepare($sql);
+      $result->bindParam(':idCancion',$idCancion);
+      $result->execute();
+      if ($result->rowCount() > 0) {
+        $cancion = $result->fetchAll(PDO::FETCH_OBJ);
+        return $cancion;        
+      }else{
+        return false;
+      }
+      $result = null;
+      $db = null;
+    }catch(PDOException $e){
+      return '{"error":{"text":'.$e->getMessage().'}}';
+    }
+  }
 }
 
 

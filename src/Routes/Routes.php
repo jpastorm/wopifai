@@ -22,10 +22,10 @@ $app->group('/api/library',function(RouteCollectorProxy $group){
 });
 
 $app->group('/api/cancion',function(RouteCollectorProxy $group){
-
-    $group->get('/cover/{hash}','App\Controllers\CancionController:getAlbumCover');
-    $group->get('/meta/{hash}','App\Controllers\CancionController:getMeta');
-    $group->get('/streamtrack/{hash}','App\Controllers\CancionController:getStreamTrack');
+    $group->get('/{hash}','App\Controllers\CancionController:getCancion');
+    $group->get('/{hash}/cover','App\Controllers\CancionController:getAlbumCover');
+    $group->get('/{hash}/meta','App\Controllers\CancionController:getMeta');
+    $group->get('/{hash}/streamtrack','App\Controllers\CancionController:getStreamTrack');
     $group->get('/song/{nombre}','App\Controllers\CancionController:getSong');
 });
 
