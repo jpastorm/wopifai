@@ -26,7 +26,7 @@ class LibraryController
 			$response->getBody()->write($payload);
 			return $response
 			->withHeader('Content-Type', 'application/json')
-			->withStatus(204);
+			->withStatus(404);
 		}
 		
 	}

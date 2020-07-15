@@ -92,7 +92,7 @@ class ExploradorController
 						$libraries[$j]['metaData']['Album'],
 						$libraries[$j]['metaData']['Track'],
 						$libraries[$j]['metaData']['Genero'],
-					    $libraries[$j]['metaData']['Anio']
+						$libraries[$j]['metaData']['Anio']
 					);
 				}
 
@@ -116,7 +116,7 @@ class ExploradorController
 						$libraries[$j]['metaData']['Album'],
 						$libraries[$j]['metaData']['Track'],
 						$libraries[$j]['metaData']['Genero'],
-					    $libraries[$j]['metaData']['Anio']
+						$libraries[$j]['metaData']['Anio']
 					);
 				}
 				array_push($lista, $libraries);
