@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use \Psr\Http\Message\StreamInterface as Stream;
 use App\Models\CancionModel;
 use App\Models\MetaDatoModel;
 use App\Libraries\Explorador;
@@ -116,6 +117,7 @@ class CancionController
 	}
 	public function getStreamTrack($request,$response,$args)
 	{	
+		header('Content-Type: audio/mpeg');
 		$Cancion = new CancionModel();
 		$Cancion->idCancion = $args['hash'];
 		$path = $Cancion->getPath();
@@ -123,8 +125,19 @@ class CancionController
 		$file = $path[0]->Ruta."/".$path[0]->NombreArchivo;
 		$contenido = file_get_contents($file);
 		$response->getBody()->write($contenido);
-		return $response->withHeader('Content-Type', 'application/force-download');
-		
+
+		header('Content-length: ' . filesize($file));
+		//readfile($contenido);
+		/*return $response
+		->withHeader('Content-Description', 'File Transfer')
+		->withHeader('Content-Type', 'application/octet-stream')
+		->withHeader('Content-Disposition', 'attachment;filename="'.basename($file).'"')
+		->withHeader('Expires', '0')
+		->withHeader('Cache-Control', 'must-revalidate')
+		->withHeader('Pragma', 'public')
+		->withHeader('Content-Length', filesize($file));*/
+		return $response
+		->withHeader('Content-Type', 'audio/mpeg');
 	}
 	public function getSong($request,$response,$args)
 	{	
