@@ -3,6 +3,8 @@ namespace App\Controllers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\StreamInterface as Stream;
+use Slim\Psr7\Factory\StreamFactory;
+
 use App\Models\CancionModel;
 use App\Models\MetaDatoModel;
 use App\Libraries\Explorador;
@@ -40,28 +42,28 @@ class CancionController
 	}
 	public static function GenerateCover($nombre){
 
-			 //Text To Add
+		//Text To Add
 		$text = $nombre;
 
-    //Background Image - The Image To Write Text On
-		$image = imagecreatefrompng("https://cdn4.iconfinder.com/data/icons/media-player-icons/80/Media_player_icons-09-512.png");
+    	//Background Image - The Image To Write Text On
+		$image = imagecreatefrompng(dirname(__FILE__, 3)."/public/assets/default_cover.png");
 
-    //Color of Text
-		$textColor = imagecolorallocate($image, 229, 85, 78);
+    	//Color of Text
+		$textColor = imagecolorallocate($image, 0, 0, 0);
 
-    //Full Font-File Path
+    	//Full Font-File Path
 
-		$ruta=dirname(__FILE__, 3)."/public/assets/COMICATE.TTF";
+		$ruta = dirname(__FILE__, 3)."/public/assets/Inter-UI-BlackItalic.ttf";
 
 		$fontPath = $ruta;
 
-    //Function That Write Text On Image
-		imagettftext($image, 60, 15, 5, 320, $textColor, $fontPath, $text);
+    	//Function That Write Text On Image
+		imagettftext($image, 15, 0, 5, 280, $textColor, $fontPath, $text);
 
-    //Set Browser Content Type
+    	//Set Browser Content Type
 		//header('Content-type: image/png');
 
-    //Send Image To Browser
+    	//Send Image To Browser
 		//imagepng($image);
 
 		ob_start();
@@ -115,30 +117,7 @@ class CancionController
 		->withStatus(200);		
 
 	}
-	public function getStreamTrack($request,$response,$args)
-	{	
-		header('Content-Type: audio/mpeg');
-		$Cancion = new CancionModel();
-		$Cancion->idCancion = $args['hash'];
-		$path = $Cancion->getPath();
 
-		$file = $path[0]->Ruta."/".$path[0]->NombreArchivo;
-		$contenido = file_get_contents($file);
-		$response->getBody()->write($contenido);
-
-		header('Content-length: ' . filesize($file));
-		//readfile($contenido);
-		/*return $response
-		->withHeader('Content-Description', 'File Transfer')
-		->withHeader('Content-Type', 'application/octet-stream')
-		->withHeader('Content-Disposition', 'attachment;filename="'.basename($file).'"')
-		->withHeader('Expires', '0')
-		->withHeader('Cache-Control', 'must-revalidate')
-		->withHeader('Pragma', 'public')
-		->withHeader('Content-Length', filesize($file));*/
-		return $response
-		->withHeader('Content-Type', 'audio/mpeg');
-	}
 	public function getSong($request,$response,$args)
 	{	
 		$Cancion = new CancionModel();
@@ -172,6 +151,70 @@ class CancionController
 		return $response
 		->withHeader('content-type', 'application/json')
 		->withStatus(200);
+	}
+
+	public function getStreamTrack($request, $response, $args) {
+		$Cancion = new CancionModel();
+		$Cancion->idCancion = $args['hash'];
+		$path = $Cancion->getPath();
+
+		$file = $path[0]->Ruta."/".$path[0]->NombreArchivo;
+
+		$fp = @fopen($file, 'rb');
+	    $size   = filesize($file); // File size
+	    $length = $size;           // Content length
+	    $start  = 0;               // Start byte
+	    $end    = $size - 1;       // End byte
+
+
+		header('Content-type: audio/mpeg');
+		header("Accept-Ranges: bytes");
+		
+		if (isset($_SERVER['HTTP_RANGE'])) {
+	        $c_start = $start;
+	        $c_end   = $end;
+	        list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+	        if (strpos($range, ',') !== false) {
+	            header('HTTP/1.1 416 Requested Range Not Satisfiable');
+	            header("Content-Range: bytes $start-$end/$size");
+	            exit;
+	        }
+	        if ($range == '-') {
+	            $c_start = $size - substr($range, 1);
+	        }else{
+	            $range  = explode('-', $range);
+	            $c_start = $range[0];
+	            $c_end   = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
+	        }
+	        $c_end = ($c_end > $end) ? $end : $c_end;
+	        if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
+	            header('HTTP/1.1 416 Requested Range Not Satisfiable');
+	            header("Content-Range: bytes $start-$end/$size");
+	            exit;
+	        }
+	        $start  = $c_start;
+	        $end    = $c_end;
+	        $length = $end - $start + 1;
+	        fseek($fp, $start);
+	        header('HTTP/1.1 206 Partial Content');
+	    }
+
+	    header("Content-Range: bytes $start-$end/$size");
+	    header("Content-Length: ".$length);
+	    $buffer = 1024 * 8;
+
+	    while(!feof($fp) && ($p = ftell($fp)) <= $end) {
+	        if ($p + $buffer > $end) {
+	            $buffer = $end - $p + 1;
+	        }
+	        set_time_limit(0);
+	        echo fread($fp, $buffer);
+	        flush();
+	    }
+
+	    fclose($fp);
+	    return $response;
+
 	}
 }
 
