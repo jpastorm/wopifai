@@ -9,6 +9,7 @@ $app = AppFactory::create();
 $app->setBasePath('/wopifai');
 require __DIR__ . '/../src/Routes/Routes.php';
 require __DIR__ . '/../src/Middlewares/Middleware.php';
+require __DIR__ . '/../src/Middlewares/MiddlewarePath.php';
 
 // Parse json, form data and xml
 $app->addBodyParsingMiddleware();

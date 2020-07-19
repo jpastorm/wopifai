@@ -3,9 +3,9 @@ namespace App\Config;
 use PDO;
 class Database{
     private $dbHost='localhost';
-    private $dbUser='root';
-    private $dbPass='root';
-    private $dbName='wopifai';
+    private $dbUser='admin';
+    private $dbPass='password';
+    private $dbName='musica';
 
     //connection
 
