@@ -1,7 +1,7 @@
 <?php 
 
 use Slim\Routing\RouteCollectorProxy;
-
+use App\Middlewares;
 
 $app->group('/api/dir',function(RouteCollectorProxy $group){
 

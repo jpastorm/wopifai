@@ -1,4 +1,5 @@
 <?php
+namespace App\Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -40,5 +41,3 @@ class MiddlewarePath
         return $response;           
     }
 }
-
-$app->add(new MiddlewarePath());
